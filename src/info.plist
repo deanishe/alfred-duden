@@ -37,6 +37,10 @@
 				<integer>127</integer>
 				<key>keyword</key>
 				<string>duden</string>
+				<key>queuedelay</key>
+				<integer>3</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
 				<key>runningsubtext</key>
 				<string>Searching…</string>
 				<key>script</key>

@@ -21,10 +21,11 @@ from hashlib import md5
 
 
 from workflow import web, Workflow, ICON_WARNING
-from BeautifulSoup import BeautifulSoup as BS
+from bs4 import BeautifulSoup as BS
 
 
-USER_AGENT = 'Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0'
+# USER_AGENT = 'Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0'
+USER_AGENT = 'curl/7.2'
 
 BASE_URL = b'http://www.duden.de'
 SEARCH_URL = b'{}/suchen/dudenonline/{{query}}'.format(BASE_URL)
@@ -101,26 +102,35 @@ def lookup(query):
     r.raise_for_status()
 
     # Parse results
-    soup = BS(r.content)
-    elems = soup.fetch('div', 'search-result')
+    soup = BS(r.content, b'html5lib')
+    # elems = soup.fetch('section', 'wide')
+    # log.debug(soup.prettify())
+    elems = soup.find_all('section', {'class': 'wide'})
+    # elems = soup.select('section.wide')
 
     for elem in elems:
+        log.debug('elem : %s', elem.prettify())
         result = {}
-        header = elem.first('h3')
+        header = elem.find('h2')
         if header is None:
             continue
 
-        link = header.first('a')
+        link = header.find('a')
 
         result['term'] = flatten(link)
         result['url'] = '{}{}'.format(BASE_URL, link['href'])
 
-        description = flatten(elem.first('p', 'text'))
+        description_elem = elem.find('p')
 
-        # Remove repeated term and Worttrennung
-        i = description.find('rennung: ')
+        log.debug('description : %r', description_elem)
+
+        description = flatten(description_elem)
+
+        # Remove Worttrennung
+        i = description.find('|')
         if i > -1:
-            description = description[i+9:]
+            i = description.find(' ', i)
+            description = description[i:].strip()
 
         result['description'] = description
 
