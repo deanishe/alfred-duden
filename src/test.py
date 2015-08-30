@@ -13,7 +13,7 @@
 
 from __future__ import print_function, unicode_literals
 
-from pprint import pprint
+# from pprint import pprint
 
 from workflow import Workflow
 import duden
@@ -24,7 +24,10 @@ duden.log = wf.logger
 terms = [
     'Untergang',
     'Lageru',
-    'Eröffnung'
+    'Eröffnung',
+    'skandieren',
+    'Pumps',
+    'in puncto',
 ]
 
 

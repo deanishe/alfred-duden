@@ -22,6 +22,7 @@ from hashlib import md5
 
 from workflow import web, Workflow, ICON_WARNING
 from bs4 import BeautifulSoup as BS
+from bs4 import Tag
 
 
 # USER_AGENT = 'Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0'
@@ -31,6 +32,7 @@ BASE_URL = b'http://www.duden.de'
 SEARCH_URL = b'{}/suchen/dudenonline/{{query}}'.format(BASE_URL)
 
 MAX_CACHE_AGE = 3600  # 1 hour
+MAX_CACHE_AGE = 5
 MIN_QUERY_LENGTH = 2
 log = None
 
@@ -63,21 +65,32 @@ def unescape(text):
     return re.sub("&#?\w+;", fixup, text)
 
 
-def flatten(elem):
+def flatten(elem, recursive=False):
     """Return the string contents of partial BS elem tree
 
-    :param elem: BeautifulSoup ``Tag`` or ``NavigableText``
+    :param elem: BeautifulSoup ``Tag`` or ``NavigableString``
+    :param recursive: Whether to flatten children or entire subtree
     :returns: Flattened Unicode text contained in subtree
 
     """
 
     content = []
 
-    for e in elem.contents:
-        if hasattr(e, 'string'):
-            content.append(e.string.strip())
+    if recursive:
+        elems = elem.descendants
+    else:
+        elems = elem.contents
 
-    return unescape(re.sub(r'\s+', ' ', ' '.join(content)))
+    for e in elems:
+        # If processing recursively, a NavigableString for the
+        # tag text will also be encountered
+        if isinstance(e, Tag) and recursive:
+            continue
+        if hasattr(e, 'string') and e.string is not None:
+            # log.debug('[%s] : %s', e.__class__.__name__, e.string)
+            content.append(e.string)
+
+    return unescape(re.sub(r'\s+', ' ', ''.join(content)))
 
 
 def lookup(query):
@@ -103,34 +116,46 @@ def lookup(query):
 
     # Parse results
     soup = BS(r.content, b'html5lib')
-    # elems = soup.fetch('section', 'wide')
-    # log.debug(soup.prettify())
     elems = soup.find_all('section', {'class': 'wide'})
-    # elems = soup.select('section.wide')
 
     for elem in elems:
-        log.debug('elem : %s', elem.prettify())
+        # log.debug('elem : %s', elem.prettify())
         result = {}
         header = elem.find('h2')
         if header is None:
             continue
 
         link = header.find('a')
+        term = flatten(link)
 
-        result['term'] = flatten(link)
+        log.debug('term : %r', term)
+
+        result['term'] = term
         result['url'] = '{}{}'.format(BASE_URL, link['href'])
 
         description_elem = elem.find('p')
 
-        log.debug('description : %r', description_elem)
+        log.debug('raw description : %r', description_elem)
 
-        description = flatten(description_elem)
+        description = flatten(description_elem, recursive=True)
 
-        # Remove Worttrennung
+        log.debug('flattened description : %r', description)
+
+        # Remove Worttrennung & definition links
         i = description.find('|')
         if i > -1:
             i = description.find(' ', i)
             description = description[i:].strip()
+        else:
+            i = description.find('Worttrennung:')
+            if i > -1:
+                i = description.find(' ', i + 14)
+                description = description[i:].strip()
+
+        description = description.replace('Zum vollständigen Artikel',
+                                          '').strip()
+
+        log.debug('description : %r', description)
 
         result['description'] = description
 
@@ -143,6 +168,7 @@ def lookup(query):
 
 
 def main(wf):
+    """Run workflow."""
     query = wf.args[0]
     if len(query) < MIN_QUERY_LENGTH:
         wf.add_item('Query too short', 'Keep typing…', icon=ICON_WARNING)
@@ -157,7 +183,9 @@ def main(wf):
     results = wf.cached_data(key, wrapper, max_age=MAX_CACHE_AGE)
 
     if not len(results):
-        wf.add_item('Nothing found', 'Try a different query', icon=ICON_WARNING)
+        wf.add_item('Nothing found',
+                    'Try a different query',
+                    icon=ICON_WARNING)
 
     for d in results:
         wf.add_item(d['term'], d['description'], uid=d['url'], arg=d['url'],
