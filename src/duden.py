@@ -9,6 +9,9 @@
 #
 
 """
+A workflow for Alfred 2 (http://www.alfredapp.com/).
+
+Search the definitive German dictionary at http://www.duden.de.
 """
 
 from __future__ import print_function, unicode_literals
@@ -19,26 +22,26 @@ import re
 import htmlentitydefs
 from hashlib import md5
 
-
 from workflow import web, Workflow, ICON_WARNING
 from bs4 import BeautifulSoup as BS
 from bs4 import Tag
 
 
+UPDATE_SETTINGS = {'github_slug': 'deanishe/alfred-duden'}
 # USER_AGENT = 'Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0'
-USER_AGENT = 'curl/7.2'
+USER_AGENT = 'Alfred-Duden/{version} (https://github.com/deanishe/alfred-duden)'
 
 BASE_URL = b'http://www.duden.de'
 SEARCH_URL = b'{}/suchen/dudenonline/{{query}}'.format(BASE_URL)
 
 MAX_CACHE_AGE = 3600  # 1 hour
-MAX_CACHE_AGE = 5
+# MAX_CACHE_AGE = 5
 MIN_QUERY_LENGTH = 2
 log = None
 
 
 def unescape(text):
-    """Replace HTML entities with Unicode characters
+    """Replace HTML entities with Unicode characters.
 
     From: http://effbot.org/zone/re-sub.htm#unescape-html
     """
@@ -66,7 +69,7 @@ def unescape(text):
 
 
 def flatten(elem, recursive=False):
-    """Return the string contents of partial BS elem tree
+    """Return the string contents of partial BS elem tree.
 
     :param elem: BeautifulSoup ``Tag`` or ``NavigableString``
     :param recursive: Whether to flatten children or entire subtree
@@ -94,7 +97,7 @@ def flatten(elem, recursive=False):
 
 
 def lookup(query):
-    """Get results matching ``query`` from duden.de
+    """Get results matching ``query`` from duden.de.
 
     :param query: Search term to look up
     :type query: ``unicode``
@@ -108,8 +111,9 @@ def lookup(query):
     url = SEARCH_URL.format(query=urllib.quote(query.encode('utf-8')))
     log.debug(url)
 
-    r = web.get(url, headers={'User-Agent': USER_AGENT})
-    # Duden sends 404 if there are no results
+    user_agent = USER_AGENT.format(version=wf.version)
+    r = web.get(url, headers={'User-Agent': user_agent})
+    # Duden.de sends 404 if there are no results
     if r.status_code == 404:
         return results
     r.raise_for_status()
@@ -132,6 +136,8 @@ def lookup(query):
 
         result['term'] = term
         result['url'] = '{}{}'.format(BASE_URL, link['href'])
+
+        log.debug('URL : %r', result['url'])
 
         description_elem = elem.find('p')
 
@@ -170,6 +176,15 @@ def lookup(query):
 def main(wf):
     """Run workflow."""
     query = wf.args[0]
+
+    log.debug('query : %r', query)
+
+    if wf.update_available:
+        wf.add_item('New version available',
+                    'Action this item to update',
+                    autocomplete='workflow:update',
+                    icon='update-available.icns')
+
     if len(query) < MIN_QUERY_LENGTH:
         wf.add_item('Query too short', 'Keep typing…', icon=ICON_WARNING)
         wf.send_feedback()
@@ -188,13 +203,18 @@ def main(wf):
                     icon=ICON_WARNING)
 
     for d in results:
-        wf.add_item(d['term'], d['description'], uid=d['url'], arg=d['url'],
-                    valid=True, icon='icon.png')
+        wf.add_item(d['term'],
+                    d['description'],
+                    modifier_subtitles={'cmd': d['url']},
+                    uid=d['url'],
+                    arg=d['url'],
+                    valid=True,
+                    icon='icon.png')
 
     wf.send_feedback()
 
 
 if __name__ == '__main__':
-    wf = Workflow()
+    wf = Workflow(update_settings=UPDATE_SETTINGS)
     log = wf.logger
     sys.exit(wf.run(main))

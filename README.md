@@ -1,25 +1,49 @@
-# Alfred Duden.de Search Workflow #
+# Duden.de Search Alfred Workflow #
 
-Search the definitive German dictionary at [Duden.de](http://www.duden.de/woerterbuch) with auto-suggest.
+A workflow for [Alfred 2][alfred].
 
-![Workflow in action](https://raw.githubusercontent.com/deanishe/alfred-duden/master/demo.gif "Workflow in action")
+Search the definitive German dictionary at [Duden.de][duden] with auto-suggest.
+
+![Workflow in action][demo]
 
 ## Download and installation ##
 
-Download the Workflow from the [GitHub releases page](https://github.com/deanishe/alfred-duden/releases/latest) or [Packal](http://www.packal.org/workflow/duden-search). Double-click the `Duden-Search.alfredworkflow` file to install.
+Download the Workflow from the [GitHub releases page][releases] or [Packal][packal]. Double-click the `Duden-Search.alfredworkflow` file to install.
 
 ## Usage ##
 
 Default keyword is `duden`. Enter your query after that.
 
-Actioning a result with `RETURN` will open the full results page at duden.de in your browser.
+Actioning a result with `RETURN` will open the full results page at duden.de in your browser. Pressing `⌘` on a result will show the URL in its subtitle.
 
 ## Feedback ##
 
-If you have a feature request, bug report or other query, you can get in touch using the [GitHub issue tracker](https://github.com/deanishe/alfred-duden/issues) or [the Alfred Forum page](http://www.alfredforum.com/topic/4707-duden-dictionary-search-with-auto-suggest/).
+If you have a feature request, bug report or other query, you can get in touch using the [GitHub issue tracker][issues] or [the Alfred Forum page][forum].
 
 ## Licensing, thanks ##
 
-The code of this workflow is released under the [MIT licence](http://opensource.org/licenses/MIT).
+The code of this workflow is released under the [MIT licence][mit].
 
-This workflow is based on the [Alfred-Workflow library](http://www.deanishe.net/alfred-workflow/index.html) (also MIT-licensed).
+This workflow is based on the following libraries (also released under the MIT licence):
+
+- The legendary [Beautiful Soup][bs] by [Leonard Richardson][lenny],
+- the extremely awesome [html5lib][h5l] by [James Graham][jgraham] & co. and
+- the not entirely useless [Alfred-Workflow][aw] by [me][deanishe].
+
+
+[alfred]: http://www.alfredapp.com/
+[aw]: http://www.deanishe.net/alfred-workflow/index.html
+[bs]: http://www.crummy.com/software/BeautifulSoup/
+[mit]: http://opensource.org/licenses/MIT
+[h5l]: https://github.com/html5lib/html5lib-python
+[deanishe]: https://github.com/deanishe/
+[duden]: http://www.duden.de/woerterbuch
+[releases]: https://github.com/deanishe/alfred-duden/releases/latest
+[demo]: https://raw.githubusercontent.com/deanishe/alfred-duden/master/demo.gif "Workflow in action"
+[packal]: http://www.packal.org/workflow/duden-search
+[issues]: https://github.com/deanishe/alfred-duden/issues
+[forum]: http://www.alfredforum.com/topic/4707-duden-dictionary-search-with-auto-suggest/
+[lenny]: http://www.crummy.com/self/
+[jgraham]: https://github.com/jgraham
+
+
