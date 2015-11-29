@@ -135,7 +135,8 @@ def lookup(query):
         log.debug('term : %r', term)
 
         result['term'] = term
-        result['url'] = '{}{}'.format(BASE_URL, link['href'])
+        # result['url'] = '{}{}'.format(BASE_URL, link['href'])
+        result['url'] = link['href']
 
         log.debug('URL : %r', result['url'])
 
