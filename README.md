@@ -1,6 +1,6 @@
 # Duden.de Search Alfred Workflow #
 
-A workflow for [Alfred 2][alfred].
+A workflow for [Alfred 2 & 3][alfred].
 
 Search the definitive German dictionary at [Duden.de][duden] with auto-suggest.
 
