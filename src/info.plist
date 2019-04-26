@@ -6,6 +6,19 @@
 	<string>net.deanishe.alfred-duden</string>
 	<key>connections</key>
 	<dict>
+		<key>6037CB3D-6245-4110-841F-C02A44A1442B</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>A3FB11F6-18D1-46A2-9F50-F69A77A027D7</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
 		<key>A3FB11F6-18D1-46A2-9F50-F69A77A027D7</key>
 		<array>
 			<dict>
@@ -15,14 +28,8 @@
 				<integer>0</integer>
 				<key>modifiersubtext</key>
 				<string></string>
-			</dict>
-			<dict>
-				<key>destinationuid</key>
-				<string>FD6A4401-862D-4528-ABA2-5E3E80D48CD1</string>
-				<key>modifiers</key>
-				<integer>1048576</integer>
-				<key>modifiersubtext</key>
-				<string></string>
+				<key>vitoclose</key>
+				<false/>
 			</dict>
 		</array>
 	</dict>
@@ -39,6 +46,31 @@
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>browser</key>
+				<string></string>
+				<key>spaces</key>
+				<string></string>
+				<key>url</key>
+				<string>{query}</string>
+				<key>utf8</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.openurl</string>
+			<key>uid</key>
+			<string>2C84750B-843A-433B-BEAD-CAD603A274AA</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
 				<key>argumenttype</key>
 				<integer>0</integer>
 				<key>escaping</key>
@@ -57,6 +89,10 @@
 				<string>Searching…</string>
 				<key>script</key>
 				<string>/usr/bin/python duden.py "{query}"</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
 				<key>subtext</key>
 				<string>Search Duden.de German Dictionary</string>
 				<key>title</key>
@@ -71,63 +107,71 @@
 			<key>uid</key>
 			<string>A3FB11F6-18D1-46A2-9F50-F69A77A027D7</string>
 			<key>version</key>
-			<integer>0</integer>
+			<integer>2</integer>
 		</dict>
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>plusspaces</key>
+				<key>action</key>
+				<integer>0</integer>
+				<key>argument</key>
+				<integer>1</integer>
+				<key>focusedappvariable</key>
 				<false/>
-				<key>url</key>
-				<string>{query}</string>
-				<key>utf8</key>
-				<true/>
+				<key>focusedappvariablename</key>
+				<string></string>
+				<key>hotkey</key>
+				<integer>2</integer>
+				<key>hotmod</key>
+				<integer>1835008</integer>
+				<key>hotstring</key>
+				<string>D</string>
+				<key>leftcursor</key>
+				<false/>
+				<key>modsmode</key>
+				<integer>0</integer>
+				<key>relatedAppsMode</key>
+				<integer>0</integer>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.action.openurl</string>
+			<string>alfred.workflow.trigger.hotkey</string>
 			<key>uid</key>
-			<string>2C84750B-843A-433B-BEAD-CAD603A274AA</string>
+			<string>6037CB3D-6245-4110-841F-C02A44A1442B</string>
 			<key>version</key>
-			<integer>0</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>plusspaces</key>
-				<false/>
-				<key>url</key>
-				<string>{query}</string>
-				<key>utf8</key>
-				<true/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.openurl</string>
-			<key>uid</key>
-			<string>FD6A4401-862D-4528-ABA2-5E3E80D48CD1</string>
-			<key>version</key>
-			<integer>0</integer>
+			<integer>2</integer>
 		</dict>
 	</array>
 	<key>readme</key>
-	<string></string>
+	<string>Alfred-Duden
+============
+
+Search the Duden German dictionary at duden.de.</string>
 	<key>uidata</key>
 	<dict>
 		<key>2C84750B-843A-433B-BEAD-CAD603A274AA</key>
 		<dict>
+			<key>xpos</key>
+			<integer>430</integer>
 			<key>ypos</key>
-			<real>10</real>
+			<integer>40</integer>
+		</dict>
+		<key>6037CB3D-6245-4110-841F-C02A44A1442B</key>
+		<dict>
+			<key>xpos</key>
+			<integer>50</integer>
+			<key>ypos</key>
+			<integer>40</integer>
 		</dict>
 		<key>A3FB11F6-18D1-46A2-9F50-F69A77A027D7</key>
 		<dict>
+			<key>xpos</key>
+			<integer>230</integer>
 			<key>ypos</key>
-			<real>10</real>
-		</dict>
-		<key>FD6A4401-862D-4528-ABA2-5E3E80D48CD1</key>
-		<dict>
-			<key>ypos</key>
-			<real>130</real>
+			<integer>40</integer>
 		</dict>
 	</dict>
+	<key>version</key>
+	<string>1.5</string>
 	<key>webaddress</key>
 	<string></string>
 </dict>

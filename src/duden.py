@@ -22,7 +22,7 @@ import re
 import htmlentitydefs
 from hashlib import md5
 
-from workflow import web, Workflow, ICON_WARNING
+from workflow import web, Workflow3, ICON_WARNING
 from bs4 import BeautifulSoup as BS
 from bs4 import Tag
 
@@ -34,9 +34,14 @@ USER_AGENT = 'Alfred-Duden/{version} (https://github.com/deanishe/alfred-duden)'
 BASE_URL = b'http://www.duden.de'
 SEARCH_URL = b'{}/suchen/dudenonline/{{query}}'.format(BASE_URL)
 
-MAX_CACHE_AGE = 3600  # 1 hour
-# MAX_CACHE_AGE = 5
+MAX_CACHE_AGE = 86400  # 1 day
 MIN_QUERY_LENGTH = 2
+
+# Load local HTML page for parser testing
+DEVMODE = False
+if DEVMODE:
+    MAX_CACHE_AGE = 1  # 1 second
+
 log = None
 
 
@@ -65,7 +70,7 @@ def unescape(text):
                 pass
         return text  # leave as is
 
-    return re.sub("&#?\w+;", fixup, text)
+    return re.sub(r'&#?\w+;', fixup, text)
 
 
 def flatten(elem, recursive=False):
@@ -93,7 +98,7 @@ def flatten(elem, recursive=False):
             # log.debug('[%s] : %s', e.__class__.__name__, e.string)
             content.append(e.string)
 
-    return unescape(re.sub(r'\s+', ' ', ''.join(content)))
+    return unescape(re.sub(r'\s+', ' ', ''.join(content))).strip()
 
 
 def lookup(query):
@@ -105,22 +110,27 @@ def lookup(query):
     :rtype: ``list``
 
     """
-
     results = []
 
-    url = SEARCH_URL.format(query=urllib.quote(query.encode('utf-8')))
-    log.debug(url)
+    if DEVMODE:
+        with open('test-after.html') as fp:
+            html = fp.read()
 
-    user_agent = USER_AGENT.format(version=wf.version)
-    r = web.get(url, headers={'User-Agent': user_agent})
-    # Duden.de sends 404 if there are no results
-    if r.status_code == 404:
-        return results
-    r.raise_for_status()
+    else:
+        url = SEARCH_URL.format(query=urllib.quote(query.encode('utf-8')))
+        log.debug(url)
+
+        user_agent = USER_AGENT.format(version=wf.version)
+        r = web.get(url, headers={'User-Agent': user_agent})
+        # Duden.de sends 404 if there are no results
+        if r.status_code == 404:
+            return results
+        r.raise_for_status()
+        html = r.content
 
     # Parse results
-    soup = BS(r.content, b'html5lib')
-    elems = soup.find_all('section', {'class': 'wide'})
+    soup = BS(html, b'html5lib')
+    elems = soup.find_all('section', {'class': 'vignette'})
 
     for elem in elems:
         # log.debug('elem : %s', elem.prettify())
@@ -136,7 +146,7 @@ def lookup(query):
 
         result['term'] = term
         # result['url'] = '{}{}'.format(BASE_URL, link['href'])
-        result['url'] = link['href']
+        result['url'] = BASE_URL + link['href']
 
         log.debug('URL : %r', result['url'])
 
@@ -204,18 +214,21 @@ def main(wf):
                     icon=ICON_WARNING)
 
     for d in results:
-        wf.add_item(d['term'],
-                    d['description'],
-                    modifier_subtitles={'cmd': d['url']},
-                    uid=d['url'],
-                    arg=d['url'],
-                    valid=True,
-                    icon='icon.png')
+        it = wf.add_item(d['term'],
+                         d['description'],
+                         uid=d['url'],
+                         arg=d['url'],
+                         valid=True,
+                         icon='icon.png')
+
+        it.add_modifier('cmd', subtitle=d['url'])
 
     wf.send_feedback()
 
 
 if __name__ == '__main__':
-    wf = Workflow(update_settings=UPDATE_SETTINGS)
+    wf = Workflow3(
+        update_settings=UPDATE_SETTINGS,
+        libraries=['./lib'])
     log = wf.logger
     sys.exit(wf.run(main))
