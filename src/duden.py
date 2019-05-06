@@ -9,27 +9,27 @@
 #
 
 """
-A workflow for Alfred 2 (http://www.alfredapp.com/).
+A workflow for Alfred 3+ (http://www.alfredapp.com/).
 
 Search the definitive German dictionary at http://www.duden.de.
 """
 
 from __future__ import print_function, unicode_literals
 
+import htmlentitydefs
+from hashlib import md5
 import sys
 import urllib
 import re
-import htmlentitydefs
-from hashlib import md5
 
 from workflow import web, Workflow3, ICON_WARNING
-from bs4 import BeautifulSoup as BS
-from bs4 import Tag
 
 
 UPDATE_SETTINGS = {'github_slug': 'deanishe/alfred-duden'}
-# USER_AGENT = 'Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0'
-USER_AGENT = 'Alfred-Duden/{version} (https://github.com/deanishe/alfred-duden)'
+# USER_AGENT = ('Mozilla/5.0 (Windows NT 5.1; rv:31.0) '
+#               'Gecko/20100101 Firefox/31.0')
+USER_AGENT = ('Alfred-Duden/{version} '
+              '(https://github.com/deanishe/alfred-duden)')
 
 BASE_URL = b'http://www.duden.de'
 SEARCH_URL = b'{}/suchen/dudenonline/{{query}}'.format(BASE_URL)
@@ -49,8 +49,8 @@ def unescape(text):
     """Replace HTML entities with Unicode characters.
 
     From: http://effbot.org/zone/re-sub.htm#unescape-html
-    """
 
+    """
     def fixup(m):
         text = m.group(0)
         if text[:2] == "&#":
@@ -81,6 +81,7 @@ def flatten(elem, recursive=False):
     :returns: Flattened Unicode text contained in subtree
 
     """
+    from bs4 import Tag
 
     content = []
 
@@ -110,6 +111,7 @@ def lookup(query):
     :rtype: ``list``
 
     """
+    from bs4 import BeautifulSoup as BS
     results = []
 
     if DEVMODE:

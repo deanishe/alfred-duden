@@ -8,8 +8,7 @@
 # Created on 2014-08-03
 #
 
-"""
-"""
+"""Simple tests for Duden parser."""
 
 from __future__ import print_function, unicode_literals
 
